@@ -1,0 +1,14 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref --symbolic-full-name HEAD)
+if [[ "$CURRENT_BRANCH" == hotfix* ]] || [[ "$CURRENT_BRANCH" == master* ]]; then
+  REMOTE_BRANCH="origin/master"
+else
+  REMOTE_BRANCH="origin/develop"
+fi
+
+echo $CURRENT_BRANCH
+echo $REMOTE_BRANCH
+
+yarn affected:test --base=${REMOTE_BRANCH}
