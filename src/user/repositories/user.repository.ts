@@ -27,7 +27,7 @@ export class UserRepository {
   async create(data: RequiredEntityData<User>) {
     const userData = _.cloneDeep(data);
     userData.password = await hashPassword(data.password);
-    const entity = this.repository.create(data);
+    const entity = this.repository.create(userData);
     await this.em.persistAndFlush(entity);
     return entity;
   }
