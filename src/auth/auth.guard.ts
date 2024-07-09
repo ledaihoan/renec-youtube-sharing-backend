@@ -8,16 +8,27 @@ import {
 import { JwtService } from '@nestjs/jwt';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Request } from 'express';
+import { Reflector } from '@nestjs/core';
 import { AUTH_MODULE_OPTION, AuthModuleOption } from './auth-module-option';
+import { IS_PUBLIC_KEY } from '../utils/public.decorator';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
+    private reflector: Reflector,
     @Inject(AUTH_MODULE_OPTION) private readonly options: AuthModuleOption,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    if (isPublic) {
+      // 💡 See this condition
+      return true;
+    }
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request as Request);
     if (!token) {

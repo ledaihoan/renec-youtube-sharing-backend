@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { DynamicModule, Module } from '@nestjs/common';
 
 import { User } from './entities';
 import { UserRepository } from './repositories';
@@ -8,9 +8,10 @@ import { CoreDatabaseModule } from '../util-database';
 
 @Module({})
 export class UserModule {
-  static forRoot() {
+  static forRoot(): DynamicModule {
     return {
       module: UserModule,
+      global: true,
       imports: [
         CoreDatabaseModule.forRoot({
           connectionString: process.env.DB_CONNECTION_STRING,

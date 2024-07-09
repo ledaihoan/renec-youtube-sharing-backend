@@ -13,6 +13,4 @@ if [ "$(docker ps -aq -f name=^/${CONTAINER_NAME}$)" ]; then
 fi
 
 # local run with interactive stream
-docker run --name $CONTAINER_NAME -p $MOUNT_PORT:$SERVICE_PORT $IMAGE_NAME
-# local run as detach mode
-# docker run --name $CONTAINER_NAME -dp $$MOUNT_PORT:$SERVICE_PORT $IMAGE_NAME
+docker run --name $CONTAINER_NAME -dp $MOUNT_PORT:$SERVICE_PORT $IMAGE_NAME

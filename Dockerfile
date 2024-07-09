@@ -22,21 +22,16 @@ ENV NODE_ENV production
 RUN addgroup --system --gid 1001 demogroup
 RUN adduser --system --uid 1001 demouser
 
-COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
 
+COPY --chown=demouser:demogroup env.local.yaml init_env.sh ./
 COPY --chown=demouser:demogroup --from=builder /app/dist ./dist
 COPY --chown=demouser:demogroup --from=builder /app/node_modules ./node_modules
-
-# Install PM2 globally
-RUN yarn global add pm2
 
 USER demouser
 
 EXPOSE 8000
 ENV PORT 8000
 
-# Create a PM2 ecosystem file
-COPY ecosystem.config.js .
-
-CMD ["pm2-runtime", "ecosystem.config.js"]
+# Start the application
+CMD ["/bin/bash", "-c", ". init_env.sh && node dist/main"]

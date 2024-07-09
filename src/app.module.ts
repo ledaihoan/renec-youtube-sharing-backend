@@ -7,7 +7,7 @@ import { AuthGuard } from './auth/auth.guard';
 
 @Module({
   imports: [
-    UserModule,
+    UserModule.forRoot(),
     AuthModule.register({
       authSecret: process.env.AUTH_SECRET,
       authExpiry: process.env.AUTH_EXPIRY || '1h',
