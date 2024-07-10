@@ -1,10 +1,12 @@
 import {
+  EntityData,
   EntityManager,
   EntityRepository,
   FilterQuery,
   FindOneOptions,
   FindOptions,
   RequiredEntityData,
+  wrap,
 } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { Injectable } from '@nestjs/common';
@@ -40,5 +42,11 @@ export class VideoPostRepository {
     options?: FindOneOptions<VideoPost>,
   ) {
     return this.repository.findOne(filter, options);
+  }
+
+  async update(entity: VideoPost, updateData: EntityData<VideoPost>) {
+    wrap(entity).assign(updateData);
+    await this.em.persistAndFlush(entity);
+    return entity;
   }
 }

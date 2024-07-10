@@ -55,9 +55,9 @@ export class VideoPost extends BaseEntity {
 
   @Property({
     type: BigIntType,
-    fieldName: 'downvote_count',
-    default: '',
+    fieldName: 'down_vote_count',
+    default: 0,
   })
   @ApiProperty()
-  downvoteCount: number;
+  downVoteCount: number;
 }

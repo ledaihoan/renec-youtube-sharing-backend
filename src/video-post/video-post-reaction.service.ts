@@ -1,24 +1,51 @@
 import { Injectable } from '@nestjs/common';
 import { FilterQuery, RequiredEntityData } from '@mikro-orm/core';
 import * as _ from 'lodash';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
 import { VideoPostReactionRepository } from './repositories';
 import { VideoPostReaction } from './entities';
 import { SearchVideoPostReactionDto } from './dtos/search-video-post-reaction.dto';
+import { QUEUE_NAMES } from './constants';
+import {
+  VIDEO_POST_REACTION_EVENT_TYPES,
+  VideoPostReactionEvent,
+} from './types/video-post-reaction-event';
 
 @Injectable()
 export class VideoPostReactionService {
-  constructor(private readonly repository: VideoPostReactionRepository) {}
+  constructor(
+    private readonly repository: VideoPostReactionRepository,
+    @InjectQueue(QUEUE_NAMES.VIDEO_POST_REACTION)
+    private videoPostReactionQueue: Queue,
+  ) {}
 
-  async addVideoReaction(
-    dto: RequiredEntityData<VideoPostReaction>,
-  ): Promise<VideoPostReaction> {
+  async addVideoReaction(dto: RequiredEntityData<VideoPostReaction>) {
     const existing = await this.repository.findOne({
       userId: dto.userId,
       videoId: dto.videoId,
     });
-    return _.isEmpty(existing)
-      ? this.repository.create(dto)
-      : this.repository.updateReaction(existing, { type: dto.type });
+
+    const increaseReactionEvent: VideoPostReactionEvent = {
+      videoId: dto.videoId,
+      userId: dto.userId,
+      type: dto.type,
+    };
+    if (_.isEmpty(existing)) {
+      await this.repository.create(dto);
+    } else if (existing.type !== dto.type) {
+      const decreaseReactionEvent = _.cloneDeep(increaseReactionEvent);
+      decreaseReactionEvent.type = existing.type;
+      await this.repository.updateReaction(existing, { type: dto.type });
+      this.videoPostReactionQueue.add(
+        VIDEO_POST_REACTION_EVENT_TYPES.DECREASE,
+        decreaseReactionEvent,
+      );
+    }
+    this.videoPostReactionQueue.add(
+      VIDEO_POST_REACTION_EVENT_TYPES.INCREASE,
+      increaseReactionEvent,
+    );
   }
 
   async searchVideoPostReactions(
@@ -37,7 +64,16 @@ export class VideoPostReactionService {
   async removeVideoReaction(userId: string, videoId: string) {
     const reaction = await this.repository.findOne({ userId, videoId });
     if (reaction) {
+      const decreaseReactionEvent: VideoPostReactionEvent = {
+        videoId: reaction.videoId,
+        userId,
+        type: reaction.type,
+      };
       await this.repository.remove(reaction);
+      this.videoPostReactionQueue.add(
+        VIDEO_POST_REACTION_EVENT_TYPES.DECREASE,
+        decreaseReactionEvent,
+      );
     }
   }
 }
