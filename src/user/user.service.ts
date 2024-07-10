@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { RequiredEntityData } from '@mikro-orm/core';
 
-import { CreateUserDto } from './dtos';
 import { User } from './entities';
 import { UserRepository } from './repositories';
 
@@ -8,7 +8,7 @@ import { UserRepository } from './repositories';
 export class UserService {
   constructor(private readonly repository: UserRepository) {}
 
-  async createUser(dto: CreateUserDto): Promise<User> {
+  async createUser(dto: RequiredEntityData<User>): Promise<User> {
     return this.repository.create(dto);
   }
 

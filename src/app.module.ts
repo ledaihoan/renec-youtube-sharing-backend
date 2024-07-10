@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { AuthGuard } from './auth/auth.guard';
+import { VideoPostModule } from './video-post/video-post.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { AuthGuard } from './auth/auth.guard';
       authSecret: process.env.AUTH_SECRET,
       authExpiry: process.env.AUTH_EXPIRY || '1h',
     }),
+    VideoPostModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [
