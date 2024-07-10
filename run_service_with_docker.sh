@@ -1,16 +1,26 @@
 #!/usr/bin/env bash
-IMAGE_NAME=renec-yt-sharing-backend
-CONTAINER_NAME=renect-yt-sharing-backend
-SERVICE_PORT=8000
-MOUNT_PORT=8000
-docker build -t $IMAGE_NAME .
 
-# Check if the container already exists
-if [ "$(docker ps -aq -f name=^/${CONTAINER_NAME}$)" ]; then
-    echo "Found existing container. Stopping and removing it..."
-    docker stop $CONTAINER_NAME
-    docker rm $CONTAINER_NAME
+# Set variables
+COMPOSE_FILE="docker-compose.yml"
+PROJECT_NAME="renec-yt-sharing-backend"
+
+# Ensure Docker Compose file exists
+if [ ! -f "$COMPOSE_FILE" ]; then
+    echo "Error: Docker Compose file not found: $COMPOSE_FILE"
+    exit 1
 fi
 
-# local run with interactive stream
-docker run --name $CONTAINER_NAME -dp $MOUNT_PORT:$SERVICE_PORT $IMAGE_NAME
+# Stop and remove existing containers
+echo "Stopping and removing existing containers..."
+docker compose -f $COMPOSE_FILE -p $PROJECT_NAME down
+
+# Build and start services
+echo "Building and starting services..."
+docker compose -f $COMPOSE_FILE -p $PROJECT_NAME up --build -d
+
+# Display running containers
+echo "Running containers:"
+docker compose -f $COMPOSE_FILE -p $PROJECT_NAME ps
+
+# Display logs (optional)
+echo "To view logs, run: docker-compose -f $COMPOSE_FILE -p $PROJECT_NAME logs -f"
