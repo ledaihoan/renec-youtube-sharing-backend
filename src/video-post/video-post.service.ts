@@ -1,13 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import * as _ from 'lodash';
 import { FilterQuery, RequiredEntityData } from '@mikro-orm/core';
 import { VideoPostRepository } from './repositories';
 import { VideoPost } from './entities';
-import { SearchVideoPostDto } from './dtos/search-video-post.dto';
+import { SearchVideoPostDto } from './dtos';
 import { CursorPaginationQuery } from '../utils/cursor-pagination-query';
 import {
   buildPaginatedResponse,
-  encodePaginationCursor,
   parsePaginationCursor,
 } from '../utils/pagination-utils';
 import { PaginationByCreatedAtParams } from './types/pagination-params';
@@ -20,7 +18,6 @@ export class VideoPostService {
   async createVideoPost(
     dto: RequiredEntityData<VideoPost>,
   ): Promise<VideoPost> {
-    console.log(dto);
     return this.repository.create(dto);
   }
 

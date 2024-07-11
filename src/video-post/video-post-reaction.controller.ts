@@ -4,6 +4,7 @@ import {
   Delete,
   ForbiddenException,
   HttpCode,
+  Logger,
   Param,
   Post,
 } from '@nestjs/common';
@@ -14,6 +15,8 @@ import { ClientData, UserData } from '../utils/user-data.decorator';
 
 @Controller()
 export class VideoPostReactionController {
+  private logger: Logger = new Logger(VideoPostReactionController.name);
+
   constructor(private readonly service: VideoPostReactionService) {}
 
   @Post('users/:userId/reactions')
@@ -23,6 +26,11 @@ export class VideoPostReactionController {
     @Body() dto: CreateVideoPostReactionDto,
     @ClientData() clientData: UserData,
   ) {
+    this.logger.debug(
+      `Creating video post reactions for user ${userId}, ${JSON.stringify(
+        clientData,
+      )}`,
+    );
     if (clientData.id !== userId) {
       throw new ForbiddenException();
     }
