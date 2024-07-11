@@ -36,9 +36,6 @@ export class VideoPostService {
     const searchDto: FilterQuery<VideoPost> = {
       createdAt: { $lte: lastCreatedAt },
     };
-    if (dto.sourceIds) {
-      _.assign(searchDto, { sourceId: { $in: dto.sourceIds } });
-    }
     const videoPosts = await this.repository.find(searchDto, {
       limit: limit + 1,
       orderBy: { createdAt: 'desc' },
