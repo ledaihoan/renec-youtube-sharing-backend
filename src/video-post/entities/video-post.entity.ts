@@ -8,6 +8,7 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseEntity } from '../../util-database';
+import { VIDEO_SOURCES } from '../constants';
 
 @Entity({ tableName: 'yt_sharing.video_post' })
 export class VideoPost extends BaseEntity {
@@ -19,7 +20,11 @@ export class VideoPost extends BaseEntity {
   @ApiProperty()
   userId: string;
 
-  @Property({ type: StringType, fieldName: 'source_id' })
+  @Property({
+    type: StringType,
+    fieldName: 'source_id',
+    default: VIDEO_SOURCES.YOUTUBE,
+  })
   @ApiProperty()
   sourceId: string;
 

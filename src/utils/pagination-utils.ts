@@ -1,6 +1,7 @@
 import { PaginatedResponse } from '../video-post/types/paginated-response';
 
 export const parsePaginationCursor = <T>(cursor: string): T => {
+  if (!cursor) return {} as T;
   const originStr = Buffer.from(cursor, 'base64').toString();
   return JSON.parse(originStr) as T;
 };
