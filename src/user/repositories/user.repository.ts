@@ -39,4 +39,8 @@ export class UserRepository {
   async findOne(filter?: FilterQuery<User>, options?: FindOneOptions<User>) {
     return this.repository.findOne(filter, options);
   }
+
+  async getOne(filter?: FilterQuery<User>, options?: FindOneOptions<User>) {
+    return this.repository.findOneOrFail(filter, options);
+  }
 }
