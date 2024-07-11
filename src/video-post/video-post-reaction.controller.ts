@@ -7,10 +7,9 @@ import {
   Param,
   Post,
 } from '@nestjs/common';
-import { CreateVideoPostReactionDto } from './dtos';
+import { CreateVideoPostReactionDto, SearchVideoPostReactionDto } from './dtos';
 import { Public } from '../utils/public.decorator';
 import { VideoPostReactionService } from './video-post-reaction.service';
-import { SearchVideoPostReactionDto } from './dtos/search-video-post-reaction.dto';
 import { ClientData, UserData } from '../utils/user-data.decorator';
 
 @Controller()

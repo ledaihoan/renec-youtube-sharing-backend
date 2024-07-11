@@ -9,10 +9,11 @@ export class CreateVideoPostDto {
   @JoiSchema(
     Joi.string()
       .valid(..._.values(VIDEO_SOURCES))
-      .default(VIDEO_SOURCES.YOUTUBE),
+      .default(VIDEO_SOURCES.YOUTUBE)
+      .required(),
   )
   @ApiProperty()
-  sourceId?: string;
+  sourceId: string;
 
   @JoiSchema(Joi.string().uri({ allowRelative: false }).required())
   @ApiProperty()

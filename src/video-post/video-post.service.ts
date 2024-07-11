@@ -20,6 +20,7 @@ export class VideoPostService {
   async createVideoPost(
     dto: RequiredEntityData<VideoPost>,
   ): Promise<VideoPost> {
+    console.log(dto);
     return this.repository.create(dto);
   }
 

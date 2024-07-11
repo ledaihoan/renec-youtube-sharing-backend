@@ -1,9 +1,8 @@
 import { Body, Controller, HttpCode, Post, Query } from '@nestjs/common';
 import { getClassSchema, JoiPipe } from 'nestjs-joi';
 import { VideoPostService } from './video-post.service';
-import { CreateVideoPostDto } from './dtos';
+import { CreateVideoPostDto, SearchVideoPostDto } from './dtos';
 import { Public } from '../utils/public.decorator';
-import { SearchVideoPostDto } from './dtos/search-video-post.dto';
 import { CursorPaginationQuery } from '../utils/cursor-pagination-query';
 import { ClientData, UserData } from '../utils/user-data.decorator';
 
@@ -16,6 +15,7 @@ export class VideoPostController {
     @Body() dto: CreateVideoPostDto,
     @ClientData() clientData: UserData,
   ) {
+    console.log(dto, { ...dto, userId: clientData.id });
     return this.service.createVideoPost({ ...dto, userId: clientData.id });
   }
 
