@@ -19,8 +19,15 @@ export class VideoPostReactionController {
 
   @Post('users/:userId/reactions')
   @HttpCode(200)
-  async create(@Body() dto: CreateVideoPostReactionDto) {
-    await this.service.addVideoReaction(dto);
+  async create(
+    @Param('userId') userId: string,
+    @Body() dto: CreateVideoPostReactionDto,
+    @ClientData() clientData: UserData,
+  ) {
+    if (clientData.id !== userId) {
+      throw new ForbiddenException();
+    }
+    await this.service.addVideoReaction({ ...dto, userId });
   }
 
   @Delete('users/:userId/reactions/:videoId')
