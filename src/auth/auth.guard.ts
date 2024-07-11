@@ -13,6 +13,7 @@ import { AUTH_MODULE_OPTION, AuthModuleOption } from './auth-module-option';
 import { IS_PUBLIC_KEY } from '../utils/public.decorator';
 import { UserService } from '../user/user.service';
 import { User } from '../user/entities';
+import { UserData } from '../utils/user-data.decorator';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -45,7 +46,7 @@ export class AuthGuard implements CanActivate {
       // so that we can access it in our route handlers
       const id = payload.id as string;
       const user = await this.userService.checkUserId(id);
-      request.user = user;
+      request.user = { id: user.id } as UserData;
     } catch {
       throw new UnauthorizedException();
     }
