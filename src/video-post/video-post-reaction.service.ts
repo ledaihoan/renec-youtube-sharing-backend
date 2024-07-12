@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { FilterQuery, RequiredEntityData } from '@mikro-orm/core';
 import * as _ from 'lodash';
 import { InjectQueue } from '@nestjs/bullmq';
@@ -14,6 +14,8 @@ import {
 
 @Injectable()
 export class VideoPostReactionService {
+  private logger = new Logger(VideoPostReactionService.name);
+
   constructor(
     private readonly repository: VideoPostReactionRepository,
     @InjectQueue(QUEUE_NAMES.VIDEO_POST_REACTION)
@@ -33,19 +35,29 @@ export class VideoPostReactionService {
     };
     if (_.isEmpty(existing)) {
       await this.repository.create(dto);
+      this.logger.log(
+        `adding reaction ${JSON.stringify(increaseReactionEvent)}`,
+      );
+      this.videoPostReactionQueue.add(
+        VIDEO_POST_REACTION_EVENT_TYPES.INCREASE,
+        increaseReactionEvent,
+      );
     } else if (existing.type !== dto.type) {
       const decreaseReactionEvent = _.cloneDeep(increaseReactionEvent);
       decreaseReactionEvent.type = existing.type;
       await this.repository.updateReaction(existing, { type: dto.type });
+      this.logger.log(
+        `Changing reaction ${JSON.stringify(increaseReactionEvent)}`,
+      );
       this.videoPostReactionQueue.add(
         VIDEO_POST_REACTION_EVENT_TYPES.DECREASE,
         decreaseReactionEvent,
       );
+      this.videoPostReactionQueue.add(
+        VIDEO_POST_REACTION_EVENT_TYPES.INCREASE,
+        increaseReactionEvent,
+      );
     }
-    this.videoPostReactionQueue.add(
-      VIDEO_POST_REACTION_EVENT_TYPES.INCREASE,
-      increaseReactionEvent,
-    );
   }
 
   async searchVideoPostReactions(

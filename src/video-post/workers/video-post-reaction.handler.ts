@@ -1,6 +1,7 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
 import { EntityData } from '@mikro-orm/core';
+import { Logger } from '@nestjs/common';
 import {
   VIDEO_POST_REACTION_EVENT_TYPES,
   VideoPostReactionEvent,
@@ -11,6 +12,8 @@ import { VideoPost } from '../entities';
 
 @Processor(QUEUE_NAMES.VIDEO_POST_REACTION, { concurrency: 1 })
 export class VideoPostReactionHandler extends WorkerHost {
+  private logger = new Logger(VideoPostReactionHandler.name);
+
   constructor(private videoPostRepository: VideoPostRepository) {
     super();
   }
@@ -35,6 +38,11 @@ export class VideoPostReactionHandler extends WorkerHost {
     const updateData: EntityData<VideoPost> = isUpVote
       ? { upvoteCount: changeAmount + videoPost.upvoteCount }
       : { downVoteCount: changeAmount + videoPost.downVoteCount };
+    this.logger.log(
+      `Handling job ${job.name} -> ${JSON.stringify(
+        updateData,
+      )} : ${changeAmount}`,
+    );
     if (changeAmount !== 0) {
       await this.videoPostRepository.update(videoPost, updateData);
     }

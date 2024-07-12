@@ -15,7 +15,6 @@ export class VideoPostController {
     @Body() dto: CreateVideoPostDto,
     @ClientData() clientData: UserData,
   ) {
-    console.log(dto, { ...dto, userId: clientData.id });
     return this.service.createVideoPost({ ...dto, userId: clientData.id });
   }
 
