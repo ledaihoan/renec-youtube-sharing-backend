@@ -48,11 +48,4 @@ export class VideoPostReactionController {
     }
     return this.service.removeVideoReaction(userId, videoId);
   }
-
-  @Public()
-  @Post('video-post-reactions/search')
-  @HttpCode(200)
-  async search(@Body() dto: SearchVideoPostReactionDto) {
-    return this.service.searchVideoPostReactions(dto);
-  }
 }
