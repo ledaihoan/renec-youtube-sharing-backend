@@ -5,7 +5,6 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { AppController } from './app.controller';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
-import { AuthGuard } from './auth/auth.guard';
 import { VideoPostModule } from './video-post/video-post.module';
 
 @Module({
@@ -25,11 +24,6 @@ import { VideoPostModule } from './video-post/video-post.module';
     VideoPostModule.forRoot(),
   ],
   controllers: [AppController],
-  providers: [
-    {
-      provide: APP_GUARD,
-      useClass: AuthGuard,
-    },
-  ],
+  providers: [],
 })
 export class AppModule {}
