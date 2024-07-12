@@ -24,7 +24,7 @@ export class UserService {
   async checkUserId(id: string): Promise<User> {
     let user = await this.cacheManager.get(`user_${id}`);
     if (!user) {
-      user = this.repository.getOne(id);
+      user = await this.repository.getOne(id);
       await this.cacheManager.set(`user_${id}`, user, 300 * 1000);
     }
     return user as User;
